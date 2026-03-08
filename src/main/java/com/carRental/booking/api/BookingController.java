@@ -75,6 +75,24 @@ public class BookingController {
         return ResponseEntity.ok(bookings);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateBooking(
+            @PathVariable Long id,
+            @RequestBody BookingRequest request) {
+        try {
+            BookingResponse response = bookingService.updateBooking(id, request);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
+    }
+
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateBookingStatus(
             @PathVariable Long id,

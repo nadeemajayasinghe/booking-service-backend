@@ -97,6 +97,54 @@ public class BookingService {
     }
 
     @Transactional
+    public BookingResponse updateBooking(Long id, BookingRequest request) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + id));
+
+        // Validate dates
+        if (request.getReturnDate().isBefore(request.getPickupDate()) ||
+                request.getReturnDate().isEqual(request.getPickupDate())) {
+            throw new IllegalArgumentException("Return date must be after pickup date");
+        }
+
+        // Check for conflicting bookings (excluding the current booking)
+        List<Booking> conflicts = bookingRepository.findConflictingBookings(
+                request.getVehicleId(),
+                request.getPickupDate(),
+                request.getReturnDate()
+        ).stream()
+                .filter(b -> !b.getId().equals(id))
+                .collect(Collectors.toList());
+
+        if (!conflicts.isEmpty()) {
+            throw new IllegalStateException("Vehicle is not available for the selected dates");
+        }
+
+        // Recalculate days and total amount
+        int numberOfDays = (int) ChronoUnit.DAYS.between(request.getPickupDate(), request.getReturnDate());
+        BigDecimal totalAmount = request.getPricePerDay().multiply(new BigDecimal(numberOfDays));
+
+        booking.setVehicleId(request.getVehicleId());
+        booking.setVehicleName(request.getVehicleName());
+        booking.setCustomerName(request.getCustomerName());
+        booking.setCustomerEmail(request.getCustomerEmail());
+        booking.setCustomerPhone(request.getCustomerPhone());
+        booking.setLicenseNumber(request.getLicenseNumber());
+        booking.setPickupDate(request.getPickupDate());
+        booking.setReturnDate(request.getReturnDate());
+        booking.setPickupLocation(request.getPickupLocation());
+        booking.setReturnLocation(request.getReturnLocation());
+        booking.setNumberOfDays(numberOfDays);
+        booking.setPricePerDay(request.getPricePerDay());
+        booking.setTotalAmount(totalAmount);
+        booking.setStatus(request.getStatus() != null ? request.getStatus() : booking.getStatus());
+        booking.setSpecialRequests(request.getSpecialRequests());
+
+        Booking updatedBooking = bookingRepository.save(booking);
+        return BookingResponse.fromEntity(updatedBooking);
+    }
+
+    @Transactional
     public BookingResponse updateBookingStatus(Long id, Booking.BookingStatus status) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found with id: " + id));
