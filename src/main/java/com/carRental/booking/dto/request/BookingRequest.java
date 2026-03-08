@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingRequest {
-    private Long vehicleId;
+    private String vehicleId;
     private String vehicleName;
     private String customerName;
     private String customerEmail;

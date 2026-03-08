@@ -66,7 +66,7 @@ public class BookingService {
         return BookingResponse.fromEntity(savedBooking);
     }
 
-    public BookingResponse getBookingById(Long id) {
+    public BookingResponse getBookingById(String id) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found with id: " + id));
         return BookingResponse.fromEntity(booking);
@@ -84,7 +84,7 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
-    public List<BookingResponse> getBookingsByVehicleId(Long vehicleId) {
+    public List<BookingResponse> getBookingsByVehicleId(String vehicleId) {
         return bookingRepository.findByVehicleId(vehicleId).stream()
                 .map(BookingResponse::fromEntity)
                 .collect(Collectors.toList());
@@ -97,7 +97,7 @@ public class BookingService {
     }
 
     @Transactional
-    public BookingResponse updateBooking(Long id, BookingRequest request) {
+    public BookingResponse updateBooking(String id, BookingRequest request) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found with id: " + id));
 
@@ -145,7 +145,7 @@ public class BookingService {
     }
 
     @Transactional
-    public BookingResponse updateBookingStatus(Long id, Booking.BookingStatus status) {
+    public BookingResponse updateBookingStatus(String id, Booking.BookingStatus status) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found with id: " + id));
         booking.setStatus(status);
@@ -154,14 +154,14 @@ public class BookingService {
     }
 
     @Transactional
-    public void deleteBooking(Long id) {
+    public void deleteBooking(String id) {
         if (!bookingRepository.existsById(id)) {
             throw new RuntimeException("Booking not found with id: " + id);
         }
         bookingRepository.deleteById(id);
     }
 
-    public boolean isVehicleAvailable(Long vehicleId, LocalDate pickupDate, LocalDate returnDate) {
+    public boolean isVehicleAvailable(String vehicleId, LocalDate pickupDate, LocalDate returnDate) {
         List<Booking> conflicts = bookingRepository.findConflictingBookings(vehicleId, pickupDate, returnDate);
         return conflicts.isEmpty();
     }

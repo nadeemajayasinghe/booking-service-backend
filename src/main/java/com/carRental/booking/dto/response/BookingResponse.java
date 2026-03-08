@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class BookingResponse {
 
-    private Long id;
-    private Long vehicleId;
+    private String id;
+    private String vehicleId;
     private String vehicleName;
     private String customerName;
     private String customerEmail;

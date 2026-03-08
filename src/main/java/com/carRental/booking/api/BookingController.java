@@ -40,7 +40,7 @@ public class BookingController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getBookingById(@PathVariable Long id) {
+    public ResponseEntity<?> getBookingById(@PathVariable String id) {
         try {
             BookingResponse response = bookingService.getBookingById(id);
             return ResponseEntity.ok(response);
@@ -64,7 +64,7 @@ public class BookingController {
     }
 
     @GetMapping("/vehicle/{vehicleId}")
-    public ResponseEntity<List<BookingResponse>> getBookingsByVehicleId(@PathVariable Long vehicleId) {
+    public ResponseEntity<List<BookingResponse>> getBookingsByVehicleId(@PathVariable String vehicleId) {
         List<BookingResponse> bookings = bookingService.getBookingsByVehicleId(vehicleId);
         return ResponseEntity.ok(bookings);
     }
@@ -77,7 +77,7 @@ public class BookingController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateBooking(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestBody BookingRequest request) {
         try {
             BookingResponse response = bookingService.updateBooking(id, request);
@@ -95,7 +95,7 @@ public class BookingController {
 
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateBookingStatus(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestParam Booking.BookingStatus status) {
         try {
             BookingResponse response = bookingService.updateBookingStatus(id, status);
@@ -108,7 +108,7 @@ public class BookingController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteBooking(@PathVariable Long id) {
+    public ResponseEntity<?> deleteBooking(@PathVariable String id) {
         try {
             bookingService.deleteBooking(id);
             Map<String, String> message = new HashMap<>();
@@ -123,7 +123,7 @@ public class BookingController {
 
     @GetMapping("/check-availability")
     public ResponseEntity<Map<String, Boolean>> checkAvailability(
-            @RequestParam Long vehicleId,
+            @RequestParam String vehicleId,
             @RequestParam LocalDate pickupDate,
             @RequestParam LocalDate returnDate) {
         boolean available = bookingService.isVehicleAvailable(vehicleId, pickupDate, returnDate);

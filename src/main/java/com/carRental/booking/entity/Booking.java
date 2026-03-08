@@ -19,11 +19,11 @@ import java.time.LocalDateTime;
 public class Booking {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @Column(nullable = false)
-    private Long vehicleId;
+    private String vehicleId;
 
     @Column(nullable = false)
     private String vehicleName;
