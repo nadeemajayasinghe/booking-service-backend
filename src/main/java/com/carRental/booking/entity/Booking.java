@@ -1,4 +1,4 @@
-package com.vehiclerental.bookingservice.model;
+package com.carRental.booking.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,7 @@
-package com.vehiclerental.bookingservice.dto;
+package com.carRental.booking.dto.response;
 
-import com.vehiclerental.bookingservice.model.Booking;
+
+import com.carRental.booking.entity.Booking;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

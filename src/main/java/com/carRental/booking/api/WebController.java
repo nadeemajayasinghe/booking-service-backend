@@ -1,4 +1,4 @@
-package com.vehiclerental.bookingservice.controller;
+package com.carRental.booking.api;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,10 +1,10 @@
 package com.carRental.booking.api;
 
+
 import com.carRental.booking.dto.request.BookingRequest;
 import com.carRental.booking.dto.response.BookingResponse;
-import com.vehiclerental.bookingservice.model.Booking;
-import com.vehiclerental.bookingservice.service.BookingService;
-import jakarta.validation.Valid;
+import com.carRental.booking.entity.Booking;
+import com.carRental.booking.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +24,9 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    public ResponseEntity<?> createBooking(@Valid @RequestBody BookingRequest request) {
+    public ResponseEntity<?> createBooking(@RequestBody BookingRequest request) {
         try {
-            BookingRespons response = bookingService.createBooking(request);
+            BookingResponse response = bookingService.createBooking(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (IllegalArgumentException | IllegalStateException e) {
             Map<String, String> error = new HashMap<>();

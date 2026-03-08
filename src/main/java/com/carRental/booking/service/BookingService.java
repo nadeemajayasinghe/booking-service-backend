@@ -1,8 +1,9 @@
 package com.carRental.booking.service;
 
 import com.carRental.booking.dto.request.BookingRequest;
-import com.vehiclerental.bookingservice.dto.BookingResponse;
-import com.vehiclerental.bookingservice.model.Booking;
+
+import com.carRental.booking.dto.response.BookingResponse;
+import com.carRental.booking.entity.Booking;
 import com.carRental.booking.repo.BookingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

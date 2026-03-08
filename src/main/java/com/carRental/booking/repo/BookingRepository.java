@@ -1,6 +1,7 @@
 package com.carRental.booking.repo;
 
-import com.vehiclerental.bookingservice.model.Booking;
+
+import com.carRental.booking.entity.Booking;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
