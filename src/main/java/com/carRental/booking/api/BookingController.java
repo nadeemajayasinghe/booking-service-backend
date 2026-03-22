@@ -1,6 +1,5 @@
 package com.carRental.booking.api;
 
-
 import com.carRental.booking.dto.request.BookingRequest;
 import com.carRental.booking.dto.response.BookingResponse;
 import com.carRental.booking.entity.Booking;

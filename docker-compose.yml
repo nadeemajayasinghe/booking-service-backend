@@ -1,15 +1,6 @@
 version: "3.9"
 
-# ─── Local Development Stack ──────────────────────────────────────────────────
-# Usage:
-#   docker-compose up --build          → start both services
-#   docker-compose down -v             → stop and remove volumes
-#   docker-compose logs -f app         → tail app logs
-# ─────────────────────────────────────────────────────────────────────────────
-
 services:
-
-  # ── MySQL 8 Database ──────────────────────────────────────────────────────
   db:
     image: mysql:8.0
     container_name: booking-mysql
@@ -20,7 +11,7 @@ services:
       MYSQL_USER: bookinguser
       MYSQL_PASSWORD: bookingpassword
     ports:
-      - "3307:3306"       # mapped to 3307 to avoid clash with local MySQL
+      - "3308:3306"   # ← change to 3308 (3307 is used by vehicle service)
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
@@ -32,7 +23,6 @@ services:
     networks:
       - booking-net
 
-  # ── Spring Boot Application ───────────────────────────────────────────────
   app:
     build:
       context: .
@@ -41,9 +31,9 @@ services:
     restart: unless-stopped
     depends_on:
       db:
-        condition: service_healthy   # waits until MySQL passes healthcheck
+        condition: service_healthy
     ports:
-      - "8081:8081"
+      - "8082:8082"   # ← change to 8082 (8081 is used by vehicle service)
     environment:
       DB_URL: jdbc:mysql://db:3306/vehicle_rental_booking?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       DB_USERNAME: bookinguser
@@ -51,11 +41,13 @@ services:
       JPA_DDL_AUTO: update
       SHOW_SQL: "false"
       LOG_LEVEL: DEBUG
-      EUREKA_ENABLED: "false"   # disable Eureka for local Docker testing
+      EUREKA_ENABLED: "false"
+      # ← Add Kafka config
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
     networks:
       - booking-net
+      - vehicle-net   # ← join vehicle network to reach kafka
 
-# ── Volumes & Networks ────────────────────────────────────────────────────────
 volumes:
   mysql-data:
     driver: local
@@ -63,3 +55,6 @@ volumes:
 networks:
   booking-net:
     driver: bridge
+  vehicle-net:
+    external: true    # ← reference the existing vehicle network
+    name: micro-service-ctse-assignment_vehicle-net
