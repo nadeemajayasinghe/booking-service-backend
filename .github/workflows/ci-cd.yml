@@ -17,7 +17,7 @@ env:
 jobs:
 
   # ─────────────────────────────────────────────
-  # JOB 1: Build (Tests Skipped for CI Stability)
+  # JOB 1: Build
   # ─────────────────────────────────────────────
   build:
     name: 🔨 Build
@@ -109,13 +109,22 @@ jobs:
               )' \
             > task-definition.json
 
-      - name: Update task definition with new image
+      - name: Inject environment variables into task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ env.DOCKER_IMAGE }}:latest
+          environment-variables: |
+            PORT=8081
+            SPRING_PROFILES_ACTIVE=prod
+            EUREKA_ENABLED=true
+            EUREKA_URL=${{ secrets.EUREKA_URL }}
+            DB_URL=${{ secrets.DB_URL }}
+            DB_USERNAME=${{ secrets.DB_USERNAME }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            SPRING_KAFKA_BOOTSTRAP_SERVERS=${{ secrets.SPRING_KAFKA_BOOTSTRAP_SERVERS }}
 
       - name: Deploy to ECS service
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
