@@ -92,11 +92,21 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Get current task definition
+      - name: Get current task definition (strip read-only fields)
         run: |
           aws ecs describe-task-definition \
             --task-definition ${{ env.ECS_TASK_DEFINITION }} \
             --query taskDefinition \
+            | jq 'del(
+                .taskDefinitionArn,
+                .revision,
+                .status,
+                .requiresAttributes,
+                .compatibilities,
+                .registeredAt,
+                .registeredBy,
+                .enableFaultInjection
+              )' \
             > task-definition.json
 
       - name: Update task definition with new image
