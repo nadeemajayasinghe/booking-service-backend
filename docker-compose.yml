@@ -1,0 +1,65 @@
+version: "3.9"
+
+# ─── Local Development Stack ──────────────────────────────────────────────────
+# Usage:
+#   docker-compose up --build          → start both services
+#   docker-compose down -v             → stop and remove volumes
+#   docker-compose logs -f app         → tail app logs
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── MySQL 8 Database ──────────────────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: booking-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: vehicle_rental_booking
+      MYSQL_USER: bookinguser
+      MYSQL_PASSWORD: bookingpassword
+    ports:
+      - "3307:3306"       # mapped to 3307 to avoid clash with local MySQL
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - booking-net
+
+  # ── Spring Boot Application ───────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: booking-service
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy   # waits until MySQL passes healthcheck
+    ports:
+      - "8081:8081"
+    environment:
+      DB_URL: jdbc:mysql://db:3306/vehicle_rental_booking?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      DB_USERNAME: bookinguser
+      DB_PASSWORD: bookingpassword
+      JPA_DDL_AUTO: update
+      SHOW_SQL: "false"
+      LOG_LEVEL: DEBUG
+      EUREKA_ENABLED: "false"   # disable Eureka for local Docker testing
+    networks:
+      - booking-net
+
+# ── Volumes & Networks ────────────────────────────────────────────────────────
+volumes:
+  mysql-data:
+    driver: local
+
+networks:
+  booking-net:
+    driver: bridge
